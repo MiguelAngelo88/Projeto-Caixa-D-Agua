@@ -2,7 +2,6 @@
   componente Tempo
 */
 
-
-
-void preparingTime(){}
-void monitoringTime(){}
+boolean TimeOver(unsigned long time){
+  return (millis() > time)? true : false;
+}
