@@ -5,6 +5,9 @@
 
 #define ON  HIGH
 #define OFF !ON
+#define NIVEL_ATINGIDO 1
+#define NIVEL_NAO_ATINGIDO !NIVEL_ATINGIDO
+#define _NULL -1
 
 void setup() {
   Serial.begin(9600);
