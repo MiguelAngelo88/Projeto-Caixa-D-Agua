@@ -15,22 +15,22 @@ void setStartEngine(boolean status){
 
 void monitoringEngine(){
 
-  if(!getLevelSensor(LEVEL_EMERGENCE)){
+  if(getLevelSensor(LEVEL_EMERGENCE) == NIVEL_NAO_ATINGIDO){
     setStartEngine(OFF);
     Serial.println("Sem Agua");
   }else{
-        if(getLevelSensor(LEVEL_100) 
-          && getLevelSensor(LEVEL_50) 
-            && getLevelSensor(LEVEL_25)){
-            setStartEngine(OFF);
-            Serial.println("Motor Desligado");
-        }else{
-          if(!getLevelSensor(LEVEL_100) 
-            && !getLevelSensor(LEVEL_50) 
-              && !getLevelSensor(LEVEL_25)){
-            setStartEngine(ON);
-            Serial.println("Motor Ligado");
-          }
-        }
+        if(getLevelSensor(LEVEL_100) == NIVEL_ATINGIDO
+          && getLevelSensor(LEVEL_50) ==  NIVEL_ATINGIDO
+            && getLevelSensor(LEVEL_25) == NIVEL_ATINGIDO){
+              setStartEngine(OFF);
+              Serial.println("Motor Desligado");
+
+        }else if(getLevelSensor(LEVEL_100) == NIVEL_NAO_ATINGIDO 
+            && getLevelSensor(LEVEL_50) == NIVEL_NAO_ATINGIDO 
+              && getLevelSensor(LEVEL_25) == NIVEL_NAO_ATINGIDO
+                && getLevelSensor(LEVEL_EMERGENCE) == NIVEL_ATINGIDO){
+                  setStartEngine(ON);
+                  Serial.println("Motor Ligado");
+          }  
     }
 }
