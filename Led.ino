@@ -3,7 +3,7 @@
 */
 
 const byte PORT_LED [] = {6,7,8,9};
-#define SIZEOF_LED sizeof(PORT_LED) / sizeof(byte);
+#define SIZEOF_LED sizeof(PORT_LED) / sizeof(byte)
 
 void preparingLed(){
   for(byte x = 0; x < SIZEOF_LED; x++){
@@ -17,10 +17,12 @@ void setLed(byte pos, boolean status){
 
 void monitoringLed(){
   for(byte x = 0; x < SIZEOF_LED; x++){
-    if(x == LEVEL_EMERGENCE){
-      setLed(x, !getLevelSensor(x));
-    }else{
-     setLed(x, getLevelSensor(x));
+    if(getLevelSensor(x) != _NULL){
+          if(x == LEVEL_EMERGENCE){
+            setLed(x, !getLevelSensor(x));
+          }else{
+            setLed(x, getLevelSensor(x));
+          }
     }
   }
 }
