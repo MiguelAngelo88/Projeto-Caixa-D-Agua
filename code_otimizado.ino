@@ -10,7 +10,11 @@
 
 #define ATRASO         3000
 
-#define PORTA_BUZZER   9
+int alarmMuteKey = 10;
+int alarm_output = 9;
+
+unsigned char m,a = 0;
+
 
 void setup() {
   Serial.begin(9600);
@@ -18,13 +22,14 @@ void setup() {
 
   prepararSensores();
   prepararLeds();
-  prepararBuzzer(); 
+  prepareAlarm(); 
 }
 
 void loop() {
   monitorarSensores();
+  monitoringAlarm();
   atualizarLeds();
-  atualizaBuzzer();
+ 
 }
 
 // Controle dos LEDs
@@ -100,24 +105,85 @@ boolean TempoExpirado(unsigned long tempo) {
   return millis() > tempo;
 }
 
-void prepararBuzzer() {
-  pinMode(PORTA_BUZZER, OUTPUT);
+
+//****************************************############################************************
+//****************************************############################************************
+
+//Componente de Alarme
+void prepareAlarm(){
+  pinMode(alarm_output, OUTPUT);
+  pinMode(alarmMuteKey, INPUT_PULLUP);
 }
 
-void atualizaBuzzer() {
-  // Verifica se todos os sensores estão em NIVEL_NAO_ATINGIDO
-  boolean todosNaoAtingidos = true;
-  for (byte i = 0; i < NUM_SENSORES; i++) {
-    if (getStatusSensor[i] != NIVEL_NAO_ATINGIDO) {
-      todosNaoAtingidos = false;
-      break;
-    }
-  }
+void monitoringAlarm(){
+  
+        if(getStatusSensor(LEVEL_100) == NIVEL_ATINGIDO
+          && getStatusSensor(LEVEL_50) ==  NIVEL_ATINGIDO
+            && getStatusSensor(LEVEL_25) == NIVEL_ATINGIDO){
+              alarmFull();
 
-  // Se todos estiverem em NIVEL_NAO_ATINGIDO, toca o buzzer
-  if (todosNaoAtingidos) {
-    tone(PORTA_BUZZER, 500, 1000); // Toca o buzzer por 1 segundo
-    delay(1000); // Espera 1 segundo
-    noTone(PORTA_BUZZER); // Desliga o buzzer
-  }
+        }
+        if(getStatusSensor(LEVEL_100) == NIVEL_NAO_ATINGIDO 
+            && getStatusSensor(LEVEL_50) == NIVEL_NAO_ATINGIDO 
+              && getStatusSensor(LEVEL_25) == NIVEL_NAO_ATINGIDO){
+                  alarmEmpty();
+          }  
+    
 }
+
+void alarmFull()
+{
+  
+if(digitalRead(alarmMuteKey) == LOW)
+a = 1;
+
+if(a == 0)
+{  
+unsigned int i, k;
+  
+for(k = 0; k < 2; k++)  
+{  
+for(i = 0; i < 200; i++)
+{
+digitalWrite(alarm_output,HIGH);
+delayMicroseconds(250);
+digitalWrite(alarm_output,LOW);
+delayMicroseconds(250);
+}
+
+for(i = 0; i < 250; i++)
+{
+digitalWrite(alarm_output,HIGH);
+delayMicroseconds(200);
+digitalWrite(alarm_output,LOW);
+delayMicroseconds(200);
+}  
+}
+if(m == 0)
+delay(300);
+} 
+}
+
+void alarmEmpty()
+{
+  
+if(digitalRead(alarmMuteKey) == LOW)
+a = 1;
+
+if(a == 0)
+{ 
+  
+unsigned int i;
+
+for(i = 0; i < 400; i++)
+{
+digitalWrite(alarm_output,HIGH);
+delayMicroseconds(200);
+digitalWrite(alarm_output,LOW);
+delayMicroseconds(200);
+} 
+if(m == 0)
+delay(300);
+}
+}
+  
