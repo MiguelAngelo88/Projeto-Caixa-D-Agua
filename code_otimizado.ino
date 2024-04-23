@@ -10,12 +10,6 @@
 
 #define ATRASO         3000
 
-int alarmMuteKey = 10;
-int alarm_output = 9;
-
-unsigned char m,a = 0;
-
-
 void setup() {
   Serial.begin(9600);
   Serial.println("Iniciando");
@@ -31,7 +25,6 @@ void loop() {
   atualizarLeds();
  
 }
-
 // Controle dos LEDs
 const byte PORTA_LED[] = {6, 7, 8};
 #define NUM_LEDS sizeof(PORTA_LED) / sizeof(byte)
@@ -105,11 +98,13 @@ boolean TempoExpirado(unsigned long tempo) {
   return millis() > tempo;
 }
 
-
-//****************************************############################************************
-//****************************************############################************************
-
 //Componente de Alarme
+
+#define alarmMuteKey  10
+#define alarm_output  9
+
+boolean a = false;
+
 void prepareAlarm(){
   pinMode(alarm_output, OUTPUT);
   pinMode(alarmMuteKey, INPUT_PULLUP);
@@ -117,73 +112,64 @@ void prepareAlarm(){
 
 void monitoringAlarm(){
   
-        if(getStatusSensor(LEVEL_100) == NIVEL_ATINGIDO
-          && getStatusSensor(LEVEL_50) ==  NIVEL_ATINGIDO
-            && getStatusSensor(LEVEL_25) == NIVEL_ATINGIDO){
-              alarmFull();
+  if(getStatusSensor(LEVEL_100) == NIVEL_ATINGIDO &&
+     getStatusSensor(LEVEL_50) ==  NIVEL_ATINGIDO &&
+     getStatusSensor(LEVEL_25) == NIVEL_ATINGIDO){
+    alarmEmpty();
+  }
+  
+  if(getStatusSensor(LEVEL_100) == NIVEL_NAO_ATINGIDO && 
+          getStatusSensor(LEVEL_50) == NIVEL_NAO_ATINGIDO && 
+          getStatusSensor(LEVEL_25) == NIVEL_NAO_ATINGIDO){
+    alarmEmpty();
+  }else {
+  	a=false;	
+  }
 
-        }
-        if(getStatusSensor(LEVEL_100) == NIVEL_NAO_ATINGIDO 
-            && getStatusSensor(LEVEL_50) == NIVEL_NAO_ATINGIDO 
-              && getStatusSensor(LEVEL_25) == NIVEL_NAO_ATINGIDO){
-                  alarmEmpty();
-          }  
+  // Verifica se o botão de desativação do alarme foi pressionado
+  int buttonRead = digitalRead(alarmMuteKey);
+  if(buttonRead == LOW){
+    a = true; // Define a variável 'a' como 1, indicando que o alarme foi silenciado
+  }
+  Serial.print("estado do botao: ");
+  Serial.println(a);
+}
+
+
+void alarmFull(){
+  Serial.println("full");
+
+  if(a == false){  
+    unsigned int i, k;
     
+  for(k = 0; k < 2; k++) {  
+    for(i = 0; i < 200; i++){
+      digitalWrite(alarm_output,HIGH);
+      delayMicroseconds(250);
+      digitalWrite(alarm_output,LOW);
+      delayMicroseconds(250);
+  }
+    for(i = 0; i < 250; i++) {
+        digitalWrite(alarm_output,HIGH);
+        delayMicroseconds(200);
+        digitalWrite(alarm_output,LOW);
+        delayMicroseconds(200);
+      }  
+    }
+  } 
 }
 
-void alarmFull()
-{
-  
-if(digitalRead(alarmMuteKey) == LOW)
-a = 1;
+void alarmEmpty(){
+  Serial.println("empty");
 
-if(a == 0)
-{  
-unsigned int i, k;
-  
-for(k = 0; k < 2; k++)  
-{  
-for(i = 0; i < 200; i++)
-{
-digitalWrite(alarm_output,HIGH);
-delayMicroseconds(250);
-digitalWrite(alarm_output,LOW);
-delayMicroseconds(250);
-}
-
-for(i = 0; i < 250; i++)
-{
-digitalWrite(alarm_output,HIGH);
-delayMicroseconds(200);
-digitalWrite(alarm_output,LOW);
-delayMicroseconds(200);
-}  
-}
-if(m == 0)
-delay(300);
-} 
-}
-
-void alarmEmpty()
-{
-  
-if(digitalRead(alarmMuteKey) == LOW)
-a = 1;
-
-if(a == 0)
-{ 
-  
-unsigned int i;
-
-for(i = 0; i < 400; i++)
-{
-digitalWrite(alarm_output,HIGH);
-delayMicroseconds(200);
-digitalWrite(alarm_output,LOW);
-delayMicroseconds(200);
-} 
-if(m == 0)
-delay(300);
-}
+  if(a == false){ 
+    unsigned int i;
+    for(i = 0; i < 400; i++){
+      digitalWrite(alarm_output,HIGH);
+      delayMicroseconds(200);
+      digitalWrite(alarm_output,LOW);
+      delayMicroseconds(200);
+    } 
+  }Serial.println("termino");
 }
   
