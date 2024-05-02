@@ -4,32 +4,32 @@
 
 #define ON             HIGH
 #define OFF            !ON
-#define NIVEL_ATINGIDO 0
-#define NIVEL_NAO_ATINGIDO !NIVEL_ATINGIDO
+#define LEVEL_ACHIEVED  0
+#define LEVEL_NOT_ACHIEVED !LEVEL_ACHIEVED
 #define _NULL          -1
 
-#define ATRASO         3000
+#define DELAY_TIME         3000
 
 void setup() {
   Serial.begin(9600);
   Serial.println("Iniciando");
 
-  prepararSensores();
-  prepararLeds();
+  prepareSensors();
+  prepareLeds();
   prepareAlarm(); 
 }
 
 void loop() {
-  monitorarSensores();
+  monitoringSensors();
   monitoringAlarm();
-  atualizarLeds();
+  refreshLeds();
  
 }
 // Controle dos LEDs
 const byte PORTA_LED[] = {6, 7, 8};
 #define NUM_LEDS sizeof(PORTA_LED) / sizeof(byte)
 
-void prepararLeds() {
+void prepareLeds() {
   for (byte i = 0; i < NUM_LEDS; i++) {
     pinMode(PORTA_LED[i], OUTPUT);
   }
@@ -39,7 +39,7 @@ void setLed(byte pos, boolean status) {
   digitalWrite(PORTA_LED[pos], status);
 }
 
-void atualizarLeds() {
+void refreshLeds() {
   for (byte i = 0; i < NUM_LEDS; i++) {
     if (getStatusSensor(i) != _NULL) {
       setLed(i, getStatusSensor(i));
@@ -48,104 +48,104 @@ void atualizarLeds() {
 }
 
 // Componente dos sensores
-const byte PORTA_SENSOR_NIVEL[] = {2, 3, 4};
-#define NUM_SENSORES sizeof(PORTA_SENSOR_NIVEL) / sizeof(byte)
-boolean STATUS_SENSOR_NIVEL[NUM_SENSORES];
-unsigned long tempoAtualSensor[NUM_SENSORES];
+const byte LEVEL_SENSORS_PIN[] = {2, 3, 4};
+#define NUM_SENSORS sizeof(LEVEL_SENSORS_PIN) / sizeof(byte)
+boolean STATUS_LEVEL_SENSOR[NUM_SENSORS];
+unsigned long sensorCurrentTime[NUM_SENSORS];
 
-void prepararSensores() {
-  for (byte i = 0; i < NUM_SENSORES; i++) {
-    pinMode(PORTA_SENSOR_NIVEL[i], INPUT_PULLUP);
-    tempoAtualSensor[i] = 0;
+void prepareSensors() {
+  for (byte i = 0; i < NUM_SENSORS; i++) {
+    pinMode(LEVEL_SENSORS_PIN[i], INPUT_PULLUP);
+    sensorCurrentTime[i] = 0;
   }
 }
 
 int getStatusSensor(byte pos) {
-  if (TempoExpirado(tempoAtualSensor[pos])) {
-    tempoAtualSensor[pos] = 0;
-    return STATUS_SENSOR_NIVEL[pos];
+  if (ExpiredTime(sensorCurrentTime[pos])) {
+    sensorCurrentTime[pos] = 0;
+    return STATUS_LEVEL_SENSOR[pos];
   }
   return _NULL;
 }
 
-void monitorarSensores() {
-  for (byte i = 0; i < NUM_SENSORES; i++) {
-    byte leituraSensor = digitalRead(PORTA_SENSOR_NIVEL[i]);
-    if ((leituraSensor == NIVEL_ATINGIDO && !STATUS_SENSOR_NIVEL[i]) ||
-        (leituraSensor == NIVEL_NAO_ATINGIDO && STATUS_SENSOR_NIVEL[i])) {
-      if (esperarSensorEstabilizar(PORTA_SENSOR_NIVEL[i])) {
-        STATUS_SENSOR_NIVEL[i] = !STATUS_SENSOR_NIVEL[i];
-        tempoAtualSensor[i] = millis() + ATRASO;
+void monitoringSensors() {
+  for (byte i = 0; i < NUM_SENSORS; i++) {
+    byte SensorRead = digitalRead(LEVEL_SENSORS_PIN[i]);
+    if ((SensorRead == LEVEL_ACHIEVED && !STATUS_LEVEL_SENSOR[i]) ||
+        (SensorRead == LEVEL_NOT_ACHIEVED && STATUS_LEVEL_SENSOR[i])) {
+      if (StabilizeSensor(LEVEL_SENSORS_PIN[i])) {
+        STATUS_LEVEL_SENSOR[i] = !STATUS_LEVEL_SENSOR[i];
+        sensorCurrentTime[i] = millis() + DELAY_TIME;
       }
     }
   }
 }
 
 // Espera o sensor se estabilizar antes de continuar
-boolean esperarSensorEstabilizar(byte portaSensor) {
-  byte leituraAtual = digitalRead(portaSensor);
-  unsigned long tempoInicioEspera = millis();
-  while (digitalRead(portaSensor) != leituraAtual) {
-    if (millis() - tempoInicioEspera > 50) {
+boolean StabilizeSensor(byte SensorPin) {
+  byte CurrentRead = digitalRead(SensorPin);
+  unsigned long StartTime = millis();
+  while (digitalRead(SensorPin) != CurrentRead) {
+    if (millis() - StartTime > 50) {
       return false; // Timeout
     }
   }
   return true;
 }
 
-// Componente de Tempo
-boolean TempoExpirado(unsigned long tempo) {
-  return millis() > tempo;
+// Componente de tempo
+boolean ExpiredTime(unsigned long timeOut) {
+  return millis() > timeOut;
 }
 
 //Componente de Alarme
 
-#define alarmMuteKey  10
-#define alarm_output  9
+#define MuteButton  10
+#define alarmPin  9
 
-boolean a = false;
+boolean alarmSilenced = false;
 
 void prepareAlarm(){
-  pinMode(alarm_output, OUTPUT);
-  pinMode(alarmMuteKey, INPUT_PULLUP);
+  pinMode(alarmPin, OUTPUT);
+  pinMode(MuteButton, INPUT_PULLUP);
 }
 
 void monitoringAlarm(){
   
-  // Verifica se todos os sensores estão em NIVEL_ATINGIDO
-  if(getStatusSensor(LEVEL_100) == NIVEL_ATINGIDO &&
-     getStatusSensor(LEVEL_50) ==  NIVEL_ATINGIDO &&
-     getStatusSensor(LEVEL_25) == NIVEL_ATINGIDO){
-    	alarme();
+  // Verifica se todos os sensores estão em LEVEL_ACHIEVED
+  if(getStatusSensor(LEVEL_100) == LEVEL_ACHIEVED &&
+     getStatusSensor(LEVEL_50) ==  LEVEL_ACHIEVED &&
+     getStatusSensor(LEVEL_25) == LEVEL_ACHIEVED){
+    	playAlarm();
   }
   
-  // Verifica se todos os sensores estão em NIVEL_NAO_ATINGIDO
-  else if(getStatusSensor(LEVEL_100) == NIVEL_NAO_ATINGIDO && 
-          getStatusSensor(LEVEL_50) == NIVEL_NAO_ATINGIDO && 
-          getStatusSensor(LEVEL_25) == NIVEL_NAO_ATINGIDO){
-    	alarme();
+  // Verifica se todos os sensores estão em LEVEL_NOT_ACHIEVED
+  else if(getStatusSensor(LEVEL_100) == LEVEL_NOT_ACHIEVED && 
+          getStatusSensor(LEVEL_50) == LEVEL_NOT_ACHIEVED && 
+          getStatusSensor(LEVEL_25) == LEVEL_NOT_ACHIEVED){
+    	playAlarm();
   }
   // Se não caiu em nenhum dos casos acima, nenhum alarme é acionado
   else {
-  	a=false;
+  	alarmSilenced = false;
   }
 
-  // Verifica se o botão de desativação do alarme foi pressionado
-  int buttonRead = digitalRead(alarmMuteKey);
-  if(buttonRead == LOW){
-    a = true; // Define a variável 'a' como 1, indicando que o alarme foi silenciado
+  // Verifica se o Alarme está ativo e se o botão de desativação foi pressionado
+  if (alarmSilenced == false) {
+    int ButtonState = digitalRead(MuteButton);
+    if(ButtonState == LOW){
+      alarmSilenced = true; 
+    }
   }
-  
 }
 
-
-void alarme(){
-  if(a == false){ 
+void playAlarm(){
+  if(alarmSilenced == false){ 
     unsigned int i;
     for(i = 0; i < 400; i++){
-      digitalWrite(alarm_output,HIGH);
+      digitalWrite(alarmPin,HIGH);
       delayMicroseconds(200);
-      digitalWrite(alarm_output,LOW);
+      digitalWrite(alarmPin,LOW);
       delayMicroseconds(200);
     } 
   }
