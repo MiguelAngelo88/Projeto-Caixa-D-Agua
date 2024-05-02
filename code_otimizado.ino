@@ -112,18 +112,22 @@ void prepareAlarm(){
 
 void monitoringAlarm(){
   
+  // Verifica se todos os sensores estão em NIVEL_ATINGIDO
   if(getStatusSensor(LEVEL_100) == NIVEL_ATINGIDO &&
      getStatusSensor(LEVEL_50) ==  NIVEL_ATINGIDO &&
      getStatusSensor(LEVEL_25) == NIVEL_ATINGIDO){
-    alarmEmpty();
+    	alarme();
   }
   
-  if(getStatusSensor(LEVEL_100) == NIVEL_NAO_ATINGIDO && 
+  // Verifica se todos os sensores estão em NIVEL_NAO_ATINGIDO
+  else if(getStatusSensor(LEVEL_100) == NIVEL_NAO_ATINGIDO && 
           getStatusSensor(LEVEL_50) == NIVEL_NAO_ATINGIDO && 
           getStatusSensor(LEVEL_25) == NIVEL_NAO_ATINGIDO){
-    alarmEmpty();
-  }else {
-  	a=false;	
+    	alarme();
+  }
+  // Se não caiu em nenhum dos casos acima, nenhum alarme é acionado
+  else {
+  	a=false;
   }
 
   // Verifica se o botão de desativação do alarme foi pressionado
@@ -131,37 +135,11 @@ void monitoringAlarm(){
   if(buttonRead == LOW){
     a = true; // Define a variável 'a' como 1, indicando que o alarme foi silenciado
   }
-  Serial.print("estado do botao: ");
-  Serial.println(a);
+  
 }
 
 
-void alarmFull(){
-  Serial.println("full");
-
-  if(a == false){  
-    unsigned int i, k;
-    
-  for(k = 0; k < 2; k++) {  
-    for(i = 0; i < 200; i++){
-      digitalWrite(alarm_output,HIGH);
-      delayMicroseconds(250);
-      digitalWrite(alarm_output,LOW);
-      delayMicroseconds(250);
-  }
-    for(i = 0; i < 250; i++) {
-        digitalWrite(alarm_output,HIGH);
-        delayMicroseconds(200);
-        digitalWrite(alarm_output,LOW);
-        delayMicroseconds(200);
-      }  
-    }
-  } 
-}
-
-void alarmEmpty(){
-  Serial.println("empty");
-
+void alarme(){
   if(a == false){ 
     unsigned int i;
     for(i = 0; i < 400; i++){
@@ -170,6 +148,6 @@ void alarmEmpty(){
       digitalWrite(alarm_output,LOW);
       delayMicroseconds(200);
     } 
-  }Serial.println("termino");
+  }
 }
   
