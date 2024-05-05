@@ -111,43 +111,33 @@ void prepareAlarm(){
 }
 
 void monitoringAlarm(){
-  
-  // Verifica se todos os sensores estão em LEVEL_ACHIEVED
-  if(getStatusSensor(LEVEL_100) == LEVEL_ACHIEVED &&
-     getStatusSensor(LEVEL_50) ==  LEVEL_ACHIEVED &&
-     getStatusSensor(LEVEL_25) == LEVEL_ACHIEVED){
-    	playAlarm();
-  }
-  
-  // Verifica se todos os sensores estão em LEVEL_NOT_ACHIEVED
-  else if(getStatusSensor(LEVEL_100) == LEVEL_NOT_ACHIEVED && 
-          getStatusSensor(LEVEL_50) == LEVEL_NOT_ACHIEVED && 
-          getStatusSensor(LEVEL_25) == LEVEL_NOT_ACHIEVED){
-    	playAlarm();
-  }
-  // Se não caiu em nenhum dos casos acima, nenhum alarme é acionado
-  else {
-  	alarmSilenced = false;
+  int status_100 = getStatusSensor(LEVEL_100);
+  int status_50 = getStatusSensor(LEVEL_50);
+  int status_25 = getStatusSensor(LEVEL_25);
+
+  if ((status_100 == LEVEL_ACHIEVED && status_50 == LEVEL_ACHIEVED && status_25 == LEVEL_ACHIEVED) ||
+      (status_100 == LEVEL_NOT_ACHIEVED && status_50 == LEVEL_NOT_ACHIEVED && status_25 == LEVEL_NOT_ACHIEVED)) {
+    playAlarm();
+  } else {
+    alarmSilenced = false;
   }
 
-  // Verifica se o Alarme está ativo e se o botão de desativação foi pressionado
   if (alarmSilenced == false) {
     int ButtonState = digitalRead(MuteButton);
-    if(ButtonState == LOW){
-      alarmSilenced = true; 
+    if (ButtonState == LOW) {
+      alarmSilenced = true;
     }
   }
 }
 
-void playAlarm(){
-  if(alarmSilenced == false){ 
-    unsigned int i;
-    for(i = 0; i < 400; i++){
-      digitalWrite(alarmPin,HIGH);
+void playAlarm() {
+  if (alarmSilenced == false) {
+     
+    for (unsigned int i = 0; i < 400; i++) {
+      digitalWrite(alarmPin, HIGH);
       delayMicroseconds(200);
-      digitalWrite(alarmPin,LOW);
+      digitalWrite(alarmPin, LOW);
       delayMicroseconds(200);
-    } 
+    }
   }
 }
-  
