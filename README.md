@@ -15,3 +15,9 @@ Configuração do hardware:
 - Led 25% na porta digital 8
 - buzzer na porta digital 9
 - botão para mutar o buzzer na porta digital 10
+
+Dimensionamento:
+Altura da caixa = 73 cm
+- Nível 1 = 15 cm
+- Nível 2 = 36,5 cm
+- Nível 3 = 68 cm
