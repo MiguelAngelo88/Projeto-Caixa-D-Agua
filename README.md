@@ -1,6 +1,6 @@
 **Monitoramento do nível da Caixa D'Água com alarme**
 Funcionamento:
-- 3 sensores de nível estão dispostos na caixa d'água em alturas que representam exatamente 100%, 50% e 25% de água presente na caixa.
+- 3 sensores de nível estão dispostos na caixa d'água em alturas que representam aproximadamente 100%, 50% e 25% de água presente na caixa.
 - Para cada sensor existe um respectivo led que irá acender quando o sensor estiver identificando água.
 - Quando os 3 sensores estiverem identificando água(caixa cheia), um buzzer irá começar a tocar por um intervalo de 10 segundos(toca 10 segundos, aguarda 10 segundos, etc), ao menos
   que o botão seja pressinado, mutando o buzzer.
