@@ -4,7 +4,7 @@ Funcionamento:
 - Para cada sensor existe um respectivo led que irá acender quando o sensor estiver identificando água.
 - Quando os 3 sensores estiverem identificando água(caixa cheia), um buzzer irá começar a tocar por um intervalo de 10 segundos(toca 10 segundos, aguarda 10 segundos, etc), ao menos
   que o botão seja pressinado, mutando o buzzer.
-- O mesmo se repete para quando os 3 sensores não estiverem identificando água(caixa vazio).
+- O mesmo se repete para quando os 3 sensores não estiverem identificando água(caixa vazia).
 
 Configuração do hardware:
 - sensor 100% na porta digital 2
