@@ -1,14 +1,24 @@
+// Mapaeamento
 #define LEVEL_100      0
 #define LEVEL_50       1
 #define LEVEL_25       2
-
 #define ON             HIGH
 #define OFF            !ON
 #define LEVEL_ACHIEVED  0
 #define LEVEL_NOT_ACHIEVED !LEVEL_ACHIEVED
 #define _NULL          -1
-
 #define DELAY_TIME         3000
+#define MuteButton  10
+#define alarmPin  9
+#define NUM_LEDS sizeof(PORTA_LED) / sizeof(byte)
+#define NUM_SENSORS sizeof(LEVEL_SENSORS_PIN) / sizeof(byte)
+
+const byte PORTA_LED[] = {6, 7, 8};
+const byte LEVEL_SENSORS_PIN[] = {2, 3, 4};
+unsigned long sensorCurrentTime[NUM_SENSORS];
+
+boolean STATUS_LEVEL_SENSOR[NUM_SENSORS];
+boolean alarmSilenced = false; // alarm flag
 
 void setup() {
   Serial.begin(9600);
@@ -26,9 +36,6 @@ void loop() {
  
 }
 // Controle dos LEDs
-const byte PORTA_LED[] = {6, 7, 8};
-#define NUM_LEDS sizeof(PORTA_LED) / sizeof(byte)
-
 void prepareLeds() {
   for (byte i = 0; i < NUM_LEDS; i++) {
     pinMode(PORTA_LED[i], OUTPUT);
@@ -48,11 +55,6 @@ void refreshLeds() {
 }
 
 // Componente dos sensores
-const byte LEVEL_SENSORS_PIN[] = {2, 3, 4};
-#define NUM_SENSORS sizeof(LEVEL_SENSORS_PIN) / sizeof(byte)
-boolean STATUS_LEVEL_SENSOR[NUM_SENSORS];
-unsigned long sensorCurrentTime[NUM_SENSORS];
-
 void prepareSensors() {
   for (byte i = 0; i < NUM_SENSORS; i++) {
     pinMode(LEVEL_SENSORS_PIN[i], INPUT_PULLUP);
@@ -99,12 +101,6 @@ boolean ExpiredTime(unsigned long timeOut) {
 }
 
 //Componente de Alarme
-
-#define MuteButton  10
-#define alarmPin  9
-
-boolean alarmSilenced = false;
-
 void prepareAlarm(){
   pinMode(alarmPin, OUTPUT);
   pinMode(MuteButton, INPUT_PULLUP);
