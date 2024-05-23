@@ -31,9 +31,8 @@ void setup() {
 
 void loop() {
   monitoringSensors();
-  monitoringAlarm();
   refreshLeds();
- 
+  monitoringAlarm();
 }
 // Controle dos LEDs
 void prepareLeds() {
@@ -106,22 +105,24 @@ void prepareAlarm(){
   pinMode(MuteButton, INPUT_PULLUP);
 }
 
-void monitoringAlarm(){
+void monitoringAlarm() {
   int status_100 = getStatusSensor(LEVEL_100);
   int status_50 = getStatusSensor(LEVEL_50);
   int status_25 = getStatusSensor(LEVEL_25);
 
-  if ((status_100 == LEVEL_ACHIEVED && status_50 == LEVEL_ACHIEVED && status_25 == LEVEL_ACHIEVED) ||
-      (status_100 == LEVEL_NOT_ACHIEVED && status_50 == LEVEL_NOT_ACHIEVED && status_25 == LEVEL_NOT_ACHIEVED)) {
-    playAlarm();
-  } else {
-    alarmSilenced = false;
-  }
+  if (status_100 != _NULL && status_50 != _NULL && status_25 != _NULL) {
+    if ((status_100 == LEVEL_ACHIEVED && status_50 == LEVEL_ACHIEVED && status_25 == LEVEL_ACHIEVED) ||
+        (status_100 == LEVEL_NOT_ACHIEVED && status_50 == LEVEL_NOT_ACHIEVED && status_25 == LEVEL_NOT_ACHIEVED)) {
+      playAlarm();
+    } else {
+      alarmSilenced = false;
+    }
 
-  if (alarmSilenced == false) {
-    int ButtonState = digitalRead(MuteButton);
-    if (ButtonState == LOW) {
-      alarmSilenced = true;
+    if (!alarmSilenced) {
+      int ButtonState = digitalRead(MuteButton);
+      if (ButtonState == LOW) {
+        alarmSilenced = true;
+      }
     }
   }
 }
