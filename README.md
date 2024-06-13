@@ -1,7 +1,7 @@
 **Monitoramento do nível da Caixa D'Água com alarme**
 
 
-    ![Painel](https://github.com/MiguelAngelo88/Projeto-Caixa-D-Agua/assets/104993355/b734319a-bf92-49b3-b807-871e8e84b82b)
+![Painel](https://github.com/MiguelAngelo88/Projeto-Caixa-D-Agua/assets/104993355/b734319a-bf92-49b3-b807-871e8e84b82b)
       
 Funcionamento:
 - 3 sensores de nível estão dispostos na caixa d'água em alturas que representam aproximadamente 100%, 50% e 25% de água presente na caixa.
